@@ -1,0 +1,494 @@
+/* Main Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+/* Schedule Table Styles */
+#schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#schedule-table th, 
+#schedule-table td {
+    border: 1px solid #dee2e6;
+    padding: 8px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+#schedule-table th {
+    background-color: #f8f9fa;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+#schedule-table .weekend {
+    background-color: #fff3cd;
+}
+
+#schedule-table .holiday {
+    background-color: #f8d7da;
+}
+
+#schedule-table .staff-cell {
+    font-weight: 500;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+#schedule-table .staff-cell:hover {
+    background-color: #e9ecef;
+}
+
+#schedule-table .staff-cell.wish-granted {
+    background-color: #d1e7dd;
+}
+
+#schedule-table .staff-cell.next-day-off {
+    border-bottom: 3px dashed #6c757d;
+}
+
+/* Drag and Drop styles */
+.shift-cell {
+    min-height: 40px;
+    border-radius: 4px;
+    padding: 6px;
+    margin-bottom: 2px;
+    cursor: grab;
+}
+
+.shift-cell.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+}
+
+.shift-cell-container {
+    min-height: 50px;
+    border-radius: 4px;
+    padding: 4px;
+    transition: background-color 0.2s;
+}
+
+.shift-cell-container.dragover {
+    background-color: rgba(13, 110, 253, 0.1);
+    border: 1px dashed #0d6efd;
+}
+
+.staff-assignment {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.staff-assignment-name {
+    font-weight: 500;
+}
+
+.staff-assignment-remove {
+    cursor: pointer;
+    color: #dc3545;
+    display: none;
+}
+
+.staff-assignment:hover .staff-assignment-remove {
+    display: block;
+}
+
+.weekly-assignment {
+    border-left: 4px solid #198754;
+}
+
+.block-assignment {
+    border-left: 4px solid #0d6efd;
+}
+
+.weekend-assignment {
+    border-left: 4px solid #fd7e14;
+}
+
+/* Legend Styles */
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+    margin-bottom: 10px;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    border-radius: 3px;
+}
+
+.legend-color.weekend {
+    background-color: #fff3cd;
+}
+
+.legend-color.holiday {
+    background-color: #f8d7da;
+}
+
+.legend-color.wish-granted {
+    background-color: #d1e7dd;
+}
+
+.legend-color.next-day-off {
+    background-color: #ffffff;
+    border-bottom: 3px dashed #6c757d;
+}
+
+.legend-color.weekly-assignment {
+    background-color: #ffffff;
+    border-left: 4px solid #198754;
+}
+
+.legend-color.block-assignment {
+    background-color: #ffffff;
+    border-left: 4px solid #0d6efd;
+}
+
+.legend-color.weekend-assignment {
+    background-color: #ffffff;
+    border-left: 4px solid #fd7e14;
+}
+
+/* Modal Styles */
+.modal-header {
+    background-color: #f8f9fa;
+}
+
+/* Export/Import Button Styles */
+.export-btn, .import-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Tooltip styles */
+.tooltip-container {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1000;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tooltip-container:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    #schedule-page .d-flex {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    #schedule-page select, 
+    #schedule-page button {
+        margin-bottom: 10px;
+        width: 100%;
+    }
+    
+    #wishes-page .d-flex {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    #wishes-page button, 
+    #wishes-page .btn-group {
+        margin-bottom: 10px;
+        width: 100%;
+    }
+    
+    .btn-group {
+        display: flex;
+    }
+    
+    .btn-group button {
+        flex: 1;
+    }
+
+    #schedule-table {
+        font-size: 0.85rem;
+    }
+
+    #schedule-table th, 
+    #schedule-table td {
+        padding: 4px;
+    }
+}
+
+/* Mobile view specific styles */
+@media (max-width: 576px) {
+    .navbar-brand {
+        font-size: 1rem;
+    }
+    
+    .tab-content {
+        overflow-x: auto;
+    }
+    
+    .shift-cell {
+        min-height: 30px;
+        padding: 3px;
+        font-size: 0.8rem;
+    }
+    
+    .calendar-table td {
+        height: 80px;
+        padding: 4px;
+    }
+    
+    .calendar-shift {
+        font-size: 0.75rem;
+        padding: 3px;
+    }
+}
+
+/* Shift specific colors */
+.shift-HD {
+    background-color: #cfe2ff;
+}
+
+.shift-ICU_morning {
+    background-color: #d1e7dd;
+}
+
+.shift-ICU_midday {
+    background-color: #e2e3e5;
+}
+
+.shift-ICU_night {
+    background-color: #f8d7da;
+}
+
+.shift-Rufdienst {
+    background-color: #fff3cd;
+}
+
+.shift-OA {
+    background-color: #d3d3d3;
+}
+
+.shift-Transplant_implant {
+    background-color: #c8e6c9;
+}
+
+.shift-Transplant_explant_1 {
+    background-color: #b3e5fc;
+}
+
+.shift-Transplant_explant_2 {
+    background-color: #bbdefb;
+}
+
+/* Absence status colors */
+.status-approved {
+    color: #198754;
+}
+
+.status-pending {
+    color: #fd7e14;
+}
+
+.status-rejected {
+    color: #dc3545;
+}
+
+/* Priority colors */
+.priority-high {
+    font-weight: bold;
+    color: #dc3545;
+}
+
+.priority-medium {
+    color: #fd7e14;
+}
+
+.priority-low {
+    color: #0d6efd;
+}
+
+/* Loading indicator */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top-color: #0d6efd;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Calendar View Styles */
+.calendar-container {
+    margin-top: 20px;
+}
+
+.calendar-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.calendar-table th,
+.calendar-table td {
+    border: 1px solid #dee2e6;
+    padding: 8px;
+    text-align: center;
+    height: 100px;
+    vertical-align: top;
+}
+
+.calendar-date {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    text-align: right;
+}
+
+.calendar-shift {
+    margin-bottom: 4px;
+    padding: 5px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    text-align: left;
+}
+
+.calendar-day {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.calendar-weekend {
+    background-color: #fff3cd;
+}
+
+.calendar-today {
+    background-color: #cfe2ff;
+}
+
+.calendar-absence {
+    background-color: #f8d7da;
+    padding: 5px;
+    margin-bottom: 4px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+/* Statistics Styles */
+.statistics-card {
+    height: 100%;
+    margin-bottom: 20px;
+}
+
+#staff-stats-table th,
+#shift-stats-table th {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa;
+    z-index: 10;
+}
+
+/* Staff capabilities */
+#staff-capabilities label {
+    margin-right: 10px;
+    margin-bottom: 5px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.capability-checkbox {
+    margin-right: 5px;
+}
+
+/* ICU Shift Order */
+.shift-ICU_morning {
+    order: 1;
+}
+
+.shift-ICU_midday {
+    order: 2;
+}
+
+.shift-ICU_night {
+    order: 3;
+}
+
+/* Forecast styles */
+.forecast-shifts {
+    display: inline-block;
+    padding: 3px 5px;
+    margin: 0 3px 3px 0;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    background-color: #e9ecef;
+}
+
+/* Print styles - improve schedule printouts */
+@media print {
+    .navbar, .d-flex, .input-group, form, button, select, 
+    .btn, #legend, [role="tablist"] {
+        display: none !important;
+    }
+    
+    .container, .table-responsive {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    #schedule-table {
+        width: 100% !important;
+        font-size: 10pt !important;
+    }
+    
+    #schedule-table th, 
+    #schedule-table td {
+        padding: 2px !important;
+    }
+    
+    .page {
+        page-break-after: always;
+    }
+    
+    a {
+        text-decoration: none !important;
+    }
+    
+    body {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+}

@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Roster Scheduling</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">Hospital Roster Scheduler</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#" data-page="schedule">Schedule</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-page="staff">Staff</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-page="absences">Absences</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-page="wishes">Wishes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-page="statistics">Statistics</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-page="calendar">Calendar View</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container mt-4">
+            <!-- Schedule Page -->
+            <div class="page" id="schedule-page">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Monthly Schedule</h2>
+                    <div class="d-flex">
+                        <select id="month-select" class="form-select me-2">
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                        <select id="year-select" class="form-select me-2">
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                        <button id="generate-schedule" class="btn btn-success me-2">Generate Schedule</button>
+                        <button id="save-schedule" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </div>
+
+                <div class="mb-3 d-flex justify-content-between align-items-center">
+                    <!-- Staff Palette for Drag and Drop -->
+                    <div class="me-3">
+                        <button class="btn btn-outline-secondary btn-sm mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#staffPalette" aria-expanded="false" aria-controls="staffPalette">
+                            <i class="bi bi-people-fill"></i> Show Staff Palette
+                        </button>
+                        <div class="collapse" id="staffPalette">
+                            <div class="card p-2 mt-2">
+                                <h6>Drag Staff to Shifts</h6>
+                                <div id="staff-palette-container" class="d-flex flex-wrap gap-2">
+                                    <!-- Staff items will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Export/Import Buttons -->
+                    <div class="d-flex">
+                        <div class="btn-group me-2">
+                            <button id="export-schedule" class="btn btn-outline-secondary export-btn">
+                                <i class="bi bi-download"></i> Export
+                            </button>
+                            <button class="btn btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown"></button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="#" id="export-csv">CSV</a></li>
+                                <li><a class="dropdown-item" href="#" id="export-excel">Excel</a></li>
+                                <li><a class="dropdown-item" href="#" id="export-pdf">PDF</a></li>
+                            </ul>
+                        </div>
+                        <button id="import-schedule" class="btn btn-outline-secondary import-btn" data-bs-toggle="modal" data-bs-target="#importModal">
+                            <i class="bi bi-upload"></i> Import
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="schedule-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Day</th>
+                                <!-- Shift columns will be added dynamically -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Schedule data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4" id="legend">
+                    <h4>Legend</h4>
+                    <div class="d-flex flex-wrap">
+                        <div class="legend-item">
+                            <div class="legend-color weekend"></div>
+                            <span>Weekend</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color holiday"></div>
+                            <span>Holiday</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color wish-granted"></div>
+                            <span>Wish Granted</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color next-day-off"></div>
+                            <span>Next Day Off</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color weekly-assignment"></div>
+                            <span>Weekly Assignment</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color block-assignment"></div>
+                            <span>Block Assignment</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color weekend-assignment"></div>
+                            <span>Weekend Pair</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Import Schedule Modal -->
+            <div class="modal fade" id="importModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Import Schedule</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="import-form">
+                                <div class="mb-3">
+                                    <label for="import-file" class="form-label">Import File (CSV, JSON, Excel)</label>
+                                    <input class="form-control" type="file" id="import-file" accept=".csv,.json,.xlsx,.xls">
+                                    <div class="form-text">Upload a schedule file to import.</div>
+                                </div>
+                                <div class="mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="import-overwrite" checked>
+                                        <label class="form-check-label" for="import-overwrite">
+                                            Overwrite existing schedule
+                                        </label>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="submit-import">Import</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Staff Page -->
+            <div class="page d-none" id="staff-page">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Staff Management</h2>
+                    <button id="add-staff" class="btn btn-primary">Add Staff Member</button>
+                </div>
+
+                <table class="table" id="staff-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Contact</th>
+                            <th>Required Shifts</th>
+                            <th>Capabilities</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Staff data will be populated here -->
+                    </tbody>
+                </table>
+
+                <!-- Staff Modal -->
+                <div class="modal fade" id="staffModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add/Edit Staff Member</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="staff-form">
+                                    <input type="hidden" id="staff-id">
+                                    <div class="mb-3">
+                                        <label for="staff-name" class="form-label">Name</label>
+                                        <input type="text" class="form-control" id="staff-name" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="staff-role" class="form-label">Role</label>
+                                        <select class="form-select" id="staff-role" required>
+                                            <option value="doctor">Doctor</option>
+                                            <option value="nurse">Nurse</option>
+                                            <option value="resident">Resident</option>
+                                            <option value="consultant">Consultant</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="staff-contact" class="form-label">Contact</label>
+                                        <input type="text" class="form-control" id="staff-contact">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="staff-required-shifts" class="form-label">Required Shifts per Month</label>
+                                        <input type="number" class="form-control" id="staff-required-shifts" min="0" value="0">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Shift Capabilities</label>
+                                        <div id="staff-capabilities" class="d-flex flex-wrap gap-2">
+                                            <!-- Shift capabilities checkboxes will be added here dynamically -->
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" id="save-staff">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Absences Page -->
+            <div class="page d-none" id="absences-page">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Absences & Leave</h2>
+                    <button id="add-absence" class="btn btn-primary">Add Absence</button>
+                </div>
+
+                <table class="table" id="absences-table">
+                    <thead>
+                        <tr>
+                            <th>Staff</th>
+                            <th>Type</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Absences data will be populated here -->
+                    </tbody>
+                </table>
+
+                <!-- Absence Modal -->
+                <div class="modal fade" id="absenceModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add/Edit Absence</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="absence-form">
+                                    <input type="hidden" id="absence-id">
+                                    <div class="mb-3">
+                                        <label for="absence-staff" class="form-label">Staff Member</label>
+                                        <select class="form-select" id="absence-staff" required>
+                                            <!-- Staff options will be populated here -->
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="absence-type" class="form-label">Type</label>
+                                        <select class="form-select" id="absence-type" required>
+                                            <option value="vacation">Vacation</option>
+                                            <option value="sick">Sick Leave</option>
+                                            <option value="training">Training</option>
+                                            <option value="other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="absence-start" class="form-label">Start Date</label>
+                                        <input type="date" class="form-control" id="absence-start" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="absence-end" class="form-label">End Date</label>
+                                        <input type="date" class="form-control" id="absence-end" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="absence-status" class="form-label">Status</label>
+                                        <select class="form-select" id="absence-status" required>
+                                            <option value="approved">Approved</option>
+                                            <option value="pending">Pending</option>
+                                            <option value="rejected">Rejected</option>
+                                        </select>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" id="save-absence">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wishes Page -->
+            <div class="page d-none" id="wishes-page">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Staff Wishes</h2>
+                    <div>
+                        <button id="add-wish" class="btn btn-primary me-2">Add Wish</button>
+                        <div class="btn-group">
+                            <button id="upload-wishes" class="btn btn-success">Upload Excel</button>
+                            <button id="download-template" class="btn btn-outline-secondary">Download Template</button>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="table" id="wishes-table">
+                    <thead>
+                        <tr>
+                            <th>Staff</th>
+                            <th>Date</th>
+                            <th>Shift</th>
+                            <th>Priority</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Wishes data will be populated here -->
+                    </tbody>
+                </table>
+
+                <!-- Wish Modal -->
+                <div class="modal fade" id="wishModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Add/Edit Wish</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="wish-form">
+                                    <input type="hidden" id="wish-id">
+                                    <div class="mb-3">
+                                        <label for="wish-staff" class="form-label">Staff Member</label>
+                                        <select class="form-select" id="wish-staff" required>
+                                            <!-- Staff options will be populated here -->
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="wish-date" class="form-label">Date</label>
+                                        <input type="date" class="form-control" id="wish-date" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="wish-shift" class="form-label">Shift</label>
+                                        <select class="form-select" id="wish-shift" required>
+                                            <!-- Shift options will be populated here -->
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="wish-priority" class="form-label">Priority</label>
+                                        <select class="form-select" id="wish-priority" required>
+                                            <option value="high">High</option>
+                                            <option value="medium">Medium</option>
+                                            <option value="low">Low</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="wish-notes" class="form-label">Notes</label>
+                                        <textarea class="form-control" id="wish-notes" rows="3"></textarea>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" id="save-wish">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload Modal -->
+                <div class="modal fade" id="uploadModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Upload Wishes Excel File</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="upload-form">
+                                    <div class="mb-3">
+                                        <label for="excel-file" class="form-label">Excel File</label>
+                                        <input class="form-control" type="file" id="excel-file" accept=".xls,.xlsx">
+                                        <div class="form-text">Upload an Excel file with staff wishes.</div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" id="submit-upload">Upload</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Statistics Page -->
+            <div class="page d-none" id="statistics-page">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Statistics & Forecasting</h2>
+                    <div class="d-flex">
+                        <select id="stats-month-select" class="form-select me-2">
+                            <option value="0">All Months</option>
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                        <select id="stats-year-select" class="form-select me-2">
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                        <button id="load-statistics" class="btn btn-primary">Load Statistics</button>
+                    </div>
+                </div>
+                
+                <ul class="nav nav-tabs mb-4" id="statisticsTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary-content" type="button" role="tab" aria-controls="summary-content" aria-selected="true">Summary</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="staff-stats-tab" data-bs-toggle="tab" data-bs-target="#staff-stats-content" type="button" role="tab" aria-controls="staff-stats-content" aria-selected="false">Staff Details</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="shift-stats-tab" data-bs-toggle="tab" data-bs-target="#shift-stats-content" type="button" role="tab" aria-controls="shift-stats-content" aria-selected="false">Shift Distribution</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="forecast-tab" data-bs-toggle="tab" data-bs-target="#forecast-content" type="button" role="tab" aria-controls="forecast-content" aria-selected="false">Forecasting</button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content" id="statisticsTabContent">
+                    <!-- Summary Tab -->
+                    <div class="tab-pane fade show active" id="summary-content" role="tabpanel" aria-labelledby="summary-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Shift Distribution</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="shift-distribution-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Staff Workload</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="staff-workload-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Absences Overview</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="absences-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Wishes Granted</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="wishes-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Staff Details Tab -->
+                    <div class="tab-pane fade" id="staff-stats-content" role="tabpanel" aria-labelledby="staff-stats-tab">
+                        <div class="table-responsive">
+                            <table class="table table-striped" id="staff-stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Staff</th>
+                                        <th>Total Shifts</th>
+                                        <th>Required</th>
+                                        <th>Remaining</th>
+                                        <th>Weekends</th>
+                                        <th>Sick Days</th>
+                                        <th>Vacation</th>
+                                        <th>Wishes Granted</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Shift Distribution Tab -->
+                    <div class="tab-pane fade" id="shift-stats-content" role="tabpanel" aria-labelledby="shift-stats-tab">
+                        <div class="table-responsive">
+                            <table class="table table-striped" id="shift-stats-table">
+                                <thead>
+                                    <tr>
+                                        <th>Staff</th>
+                                        <!-- Shift columns will be populated by JavaScript -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Forecasting Tab -->
+                    <div class="tab-pane fade" id="forecast-content" role="tabpanel" aria-labelledby="forecast-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Remaining Shifts</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="forecast-chart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5 class="card-title mb-0">Recommended Distribution</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm" id="forecast-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Staff</th>
+                                                        <th>Remaining</th>
+                                                        <th>Recommended Shifts</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <!-- Will be populated by JavaScript -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Calendar View Page -->
+            <div class="page d-none" id="calendar-page">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2>Calendar View</h2>
+                    <div class="d-flex">
+                        <select id="calendar-staff-select" class="form-select me-2">
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                        <select id="calendar-month-select" class="form-select me-2">
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                        <select id="calendar-year-select" class="form-select me-2">
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                        <button id="load-calendar" class="btn btn-primary">View Calendar</button>
+                    </div>
+                </div>
+                
+                <div class="calendar-container mb-4">
+                    <div id="staff-calendar" class="table-responsive">
+                        <!-- Calendar will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Shifts Summary</h5>
+                            </div>
+                            <div class="card-body" id="calendar-shifts-summary">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Absences</h5>
+                            </div>
+                            <div class="card-body" id="calendar-absences-summary">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

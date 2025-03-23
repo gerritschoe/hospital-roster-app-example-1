@@ -1,0 +1,84 @@
+[
+    {
+        "id": "b106ac70-2808-4d2e-b7a0-d3ea103fac77",
+        "name": "Friederike",
+        "role": "doctor",
+        "contact": "",
+        "capabilities": [
+            "HD",
+            "ICU_morning",
+            "ICU_midday",
+            "ICU_night",
+            "OA"
+        ],
+        "required_shifts": 12
+    },
+    {
+        "id": "efc9f36a-50f6-43e7-9cea-e7068ce30345",
+        "name": "Gerrit",
+        "role": "consultant",
+        "contact": "",
+        "capabilities": [
+            "HD",
+            "ICU_morning",
+            "ICU_midday",
+            "OA"
+        ],
+        "required_shifts": 10
+    },
+    {
+        "id": "a6ba1f50-b0eb-40fc-b771-f8473c2f0fcb",
+        "name": "Hinnerk",
+        "role": "nurse",
+        "contact": "",
+        "capabilities": [
+            "ICU_morning",
+            "ICU_midday",
+            "ICU_night"
+        ],
+        "required_shifts": 15
+    },
+    {
+        "id": "40079c5b-9904-4a62-be29-ffb1b1597ced",
+        "name": "Gerlind",
+        "role": "doctor",
+        "contact": "",
+        "capabilities": [
+            "HD",
+            "ICU_morning",
+            "ICU_midday",
+            "ICU_night",
+            "Rufdienst",
+            "Transplant_implant"
+        ],
+        "required_shifts": 18
+    },
+    {
+        "id": "e45b7de0-cb83-49b0-b89c-fc55f03a3955",
+        "name": "Chicken",
+        "role": "doctor",
+        "contact": "",
+        "capabilities": [
+            "HD",
+            "ICU_morning",
+            "ICU_midday",
+            "OA"
+        ],
+        "required_shifts": 12
+    },
+    {
+        "id": "7563327b-8061-4a4b-9d94-621c6e0786b4",
+        "name": "Brokkoli",
+        "role": "doctor",
+        "contact": "McChicken",
+        "capabilities": [
+            "HD",
+            "ICU_morning",
+            "ICU_night",
+            "Transplant_implant",
+            "Transplant_explant_1",
+            "Transplant_explant_2"
+        ],
+        "required_shifts": 14
+    }
+]
